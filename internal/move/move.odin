@@ -1,1 +1,0 @@
-// Move validation and notation

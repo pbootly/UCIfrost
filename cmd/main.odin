@@ -1,17 +1,20 @@
 package main
 
-import "../internal/adapters/gui_sdl"
+import "core:log"
+import "../src/gui_sdl"
 
 main :: proc() {
-    gui := gui_sdl.GuiSDL{}
-    if !gui.init() {
-        return
+    context.logger = log.create_console_logger()
+
+    gui := gui_sdl.new_gui()
+    if res := gui_sdl.init_sdl(&gui); !res {
+        log.errorf("Initialization failed")
     }
-    defer gui.shutdown()
+    defer gui_sdl.shutdown(&gui)
 
     running := true
     for running {
-        running = gui.handle_events()
-        gui.draw_board()
+        running = gui_sdl.handle_events(&gui)
+        gui_sdl.draw_board(&gui)
     }
 }
