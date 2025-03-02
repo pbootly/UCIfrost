@@ -9,6 +9,28 @@ GuiSDL :: struct {
     renderer: ^SDL.Renderer,
 }
 
+// TODO: move this out to a board package, as well as Bitboard
+Board :: struct {
+    size: int,
+}
+
+Bitboard :: struct {
+    white_pieces: u64,
+    black_pieces: u64,
+    white_pawns: u64,
+    black_pawns: u64,
+    white_rooks: u64,
+    black_rooks: u64,
+    white_knights: u64,
+    black_knights: u64,
+    white_bishops: u64,
+    black_bishops: u64,
+    white_queen: u64,
+    black_queen: u64,
+    white_king: u64,
+    black_king: u64,
+}
+
 new_gui :: proc() -> GuiSDL {
     return GuiSDL{}
 }
@@ -16,6 +38,7 @@ new_gui :: proc() -> GuiSDL {
 init_sdl :: proc(self: ^GuiSDL) -> (ok: bool) {
 
     if sdl_res := SDL.Init(SDL.INIT_VIDEO); sdl_res < 0 {
+        SDL.Log("Failed to init SDL: %s", SDL.GetError())
         return false
     }
     
@@ -48,9 +71,8 @@ handle_events :: proc(self: ^GuiSDL) -> bool {
     return true
 }
 
-draw_board :: proc(self: ^GuiSDL) {
-    board_size := 800
-    square_size := board_size / 8
+draw_board :: proc(self: ^GuiSDL, board: ^Board) {
+    square_size := board.size / 8
     for y := 0; y < 8; y += 1 {
         for x := 0; x < 8; x += 1 {
             if (x + y) % 2 == 0 {
