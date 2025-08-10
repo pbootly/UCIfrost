@@ -45,9 +45,13 @@ main :: proc() {
 
 	target_fps := 60
 	frame_duration := time.Duration(1_000_000_000 / target_fps)
+
+	fen := board.board_to_fen(&b)
 	for running {
 		elapsed := time.tick_lap_time(&tick)
-		running = gui_sdl.handle_events(&gui)
+		// TODO: don't pass engine every tick, share it
+		// TODO same with board state
+		running = gui_sdl.handle_events(&gui, fen, &e.pipes)
 		gui_sdl.draw_board(&gui, &b, &pieces)
 		if elapsed < frame_duration {
 			time.sleep(frame_duration - elapsed)

@@ -44,6 +44,10 @@ read_from_engine :: proc(self: ^process.ProcessPipes, expected: string) -> strin
 	response_lines: [dynamic]string
 	for {
 		msg, err := bufio.reader_read_string(&r, '\n', context.allocator)
+		log.debug(msg)
+		if strings.has_prefix(msg, "Unknown command:") {
+			log.error("Unknown command sent to engine:", msg)
+		}
 		if err != nil {
 			log.errorf("failed to read from pipe: ", err)
 			break
@@ -59,6 +63,6 @@ read_from_engine :: proc(self: ^process.ProcessPipes, expected: string) -> strin
 }
 
 quit :: proc(self: ^process.ProcessPipes) {
-  log.info("shutting down engine")
+	log.info("shutting down engine")
 	message_engine(create_command(UCI.QUIT, ""), self)
 }

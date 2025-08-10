@@ -1,5 +1,9 @@
 package board
 
+import "core:fmt"
+import "core:strconv"
+import "core:strings"
+
 Board :: struct {
 	size:   int,
 	pieces: [64]string,
@@ -24,25 +28,24 @@ Bitboard :: struct {
 
 
 init_board :: proc(board: ^Board) {
-    bb := Bitboard{
-        white_pawns   = 0x000000000000FF00,
-        white_rooks   = 0x0000000000000081,
-        white_knights = 0x0000000000000042,
-        white_bishops = 0x0000000000000024,
-        white_queen   = 0x0000000000000008,
-        white_king    = 0x0000000000000010,
+	bb := Bitboard {
+		white_pawns   = 0x000000000000FF00,
+		white_rooks   = 0x0000000000000081,
+		white_knights = 0x0000000000000042,
+		white_bishops = 0x0000000000000024,
+		white_queen   = 0x0000000000000008,
+		white_king    = 0x0000000000000010,
+		black_pawns   = 0x00FF000000000000,
+		black_rooks   = 0x8100000000000000,
+		black_knights = 0x4200000000000000,
+		black_bishops = 0x2400000000000000,
+		black_queen   = 0x0800000000000000,
+		black_king    = 0x1000000000000000,
+	}
 
-        black_pawns   = 0x00FF000000000000,
-        black_rooks   = 0x8100000000000000,
-        black_knights = 0x4200000000000000,
-        black_bishops = 0x2400000000000000,
-        black_queen   = 0x0800000000000000,
-        black_king    = 0x1000000000000000,
-    }
-
-    for sq in 0..<64 {
-        board.pieces[sq] = get_piece_name_on_square(&bb, sq)
-    }
+	for sq in 0 ..< 64 {
+		board.pieces[sq] = get_piece_name_on_square(&bb, sq)
+	}
 }
 
 get_piece_name_on_square :: proc(bitboard: ^Bitboard, square: int) -> string {
@@ -75,4 +78,51 @@ get_piece_name_on_square :: proc(bitboard: ^Bitboard, square: int) -> string {
 	}
 
 	return ""
+}
+
+piece_to_fen_letter :: proc(piece_name: string) -> rune {
+	letter: rune
+
+	switch piece_name {
+	case "w_pawn":
+		letter = 'P'
+	case "w_knight":
+		letter = 'N'
+	case "w_bishop":
+		letter = 'B'
+	case "w_rook":
+		letter = 'R'
+	case "w_queen":
+		letter = 'Q'
+	case "w_king":
+		letter = 'K'
+
+	case "b_pawn":
+		letter = 'p'
+	case "b_knight":
+		letter = 'n'
+	case "b_bishop":
+		letter = 'b'
+	case "b_rook":
+		letter = 'r'
+	case "b_queen":
+		letter = 'q'
+	case "b_king":
+		letter = 'k'
+
+	case:
+		letter = '1'
+	}
+
+	return letter
+}
+
+
+board_to_fen :: proc(b: ^Board) -> string {
+
+	//TODO: implement me
+
+	// Test FEN (initial board)
+	fen := " rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	return fen
 }
