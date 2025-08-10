@@ -1,4 +1,4 @@
-package gui_sdl
+package utils
 
 import "base:runtime"
 string_to_cstring :: proc(s: string) -> cstring {

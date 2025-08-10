@@ -1,5 +1,6 @@
 package gui_sdl
 
+import "../chess/board"
 import "core:c"
 import "core:fmt"
 import "core:log"
@@ -11,28 +12,6 @@ GuiSDL :: struct {
 	window:   ^SDL.Window,
 	renderer: ^SDL.Renderer,
 	font:     ^ttf.Font,
-}
-
-Board :: struct {
-	size:   int,
-	pieces: [64]string,
-}
-
-Bitboard :: struct {
-	white_pieces:  u64,
-	black_pieces:  u64,
-	white_pawns:   u64,
-	black_pawns:   u64,
-	white_rooks:   u64,
-	black_rooks:   u64,
-	white_knights: u64,
-	black_knights: u64,
-	white_bishops: u64,
-	black_bishops: u64,
-	white_queen:   u64,
-	black_queen:   u64,
-	white_king:    u64,
-	black_king:    u64,
 }
 
 Square :: struct {
@@ -98,7 +77,7 @@ square_to_algebraic :: proc(square: Square) -> string {
 	return string(buf)
 }
 
-draw_board :: proc(self: ^GuiSDL, board: ^Board, pieces: ^PieceTextures) {
+draw_board :: proc(self: ^GuiSDL, board: ^board.Board, pieces: ^PieceTextures) {
 	square_size := board.size / 8
 	for y := 0; y < 8; y += 1 {
 		for x := 0; x < 8; x += 1 {
@@ -149,6 +128,8 @@ draw_board :: proc(self: ^GuiSDL, board: ^Board, pieces: ^PieceTextures) {
 						h = c.int(square_size),
 					}
 					SDL.RenderCopy(self.renderer, texture, nil, &dst_rect)
+				} else {
+					SDL.Log("Missing texture for %s", piece_name)
 				}
 			}
 		}
@@ -160,35 +141,4 @@ shutdown :: proc(self: ^GuiSDL) {
 	SDL.DestroyRenderer(self.renderer)
 	SDL.DestroyWindow(self.window)
 	SDL.Quit()
-}
-get_piece_name_on_square :: proc(bitboard: ^Bitboard, square: int) -> string {
-	mask := u64(1) << u64(square)
-
-	if bitboard.white_pawns & mask != 0 {
-		return "w_pawn"
-	} else if bitboard.white_rooks & mask != 0 {
-		return "w_rook"
-	} else if bitboard.white_knights & mask != 0 {
-		return "w_knight"
-	} else if bitboard.white_bishops & mask != 0 {
-		return "w_bishop"
-	} else if bitboard.white_queen & mask != 0 {
-		return "w_queen"
-	} else if bitboard.white_king & mask != 0 {
-		return "w_king"
-	} else if bitboard.black_pawns & mask != 0 {
-		return "b_pawn"
-	} else if bitboard.black_rooks & mask != 0 {
-		return "b_rook"
-	} else if bitboard.black_knights & mask != 0 {
-		return "b_knight"
-	} else if bitboard.black_bishops & mask != 0 {
-		return "b_bishop"
-	} else if bitboard.black_queen & mask != 0 {
-		return "b_queen"
-	} else if bitboard.black_king & mask != 0 {
-		return "b_king"
-	}
-
-	return ""
 }

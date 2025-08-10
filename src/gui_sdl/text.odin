@@ -1,5 +1,6 @@
 package gui_sdl
 
+import "../utils"
 import "core:c"
 import "core:log"
 import SDL "vendor:sdl2"
@@ -11,7 +12,7 @@ init_font :: proc(path: string, size: int) -> ^ttf.Font {
 		log.error("Failed to init SDL_ttf: %s", ttf.GetError())
 	}
 
-	cpath := string_to_cstring(path)
+	cpath := utils.string_to_cstring(path)
 	font := ttf.OpenFont(cpath, c.int(size))
 	if font == nil {
 		log.error("Failed to load font: %s", ttf.GetError())
@@ -20,7 +21,7 @@ init_font :: proc(path: string, size: int) -> ^ttf.Font {
 	return font
 }
 render_text :: proc(self: ^GuiSDL, text: string, x: int, y: int, color: SDL.Color) {
-	c_text := string_to_cstring(text)
+	c_text := utils.string_to_cstring(text)
 	surface := ttf.RenderUTF8_Solid(self.font, c_text, color)
 	if surface == nil {
 		SDL.Log("Failed to render text surface: %s", ttf.GetError())
