@@ -79,12 +79,44 @@ square_to_algebraic :: proc(square: Square) -> string {
 
 draw_board :: proc(self: ^GuiSDL, board: ^board.Board, pieces: ^PieceTextures) {
 	square_size := board.size / 8
+
+	// Get valid destination squares for highlighting
+	valid_destinations := get_valid_destination_squares()
+	defer delete(valid_destinations)
+
 	for y := 0; y < 8; y += 1 {
 		for x := 0; x < 8; x += 1 {
+			// Check if this square is selected
+			current_square := square_to_algebraic({i32(y), i32(x)})
+			is_selected := selected_square == current_square
+
+			// Check if this square is a valid move destination
+			is_valid_destination := false
+			for dest in valid_destinations {
+				if current_square == dest {
+					is_valid_destination = true
+					break
+				}
+			}
+
 			if (x + y) % 2 == 0 {
-				SDL.SetRenderDrawColor(self.renderer, 240, 217, 181, 255)
+				// Light squares - highlight if selected or valid destination
+				if is_selected {
+					SDL.SetRenderDrawColor(self.renderer, 255, 255, 0, 255) // Yellow highlight for selected
+				} else if is_valid_destination {
+					SDL.SetRenderDrawColor(self.renderer, 144, 238, 144, 255) // Light green for valid moves
+				} else {
+					SDL.SetRenderDrawColor(self.renderer, 240, 217, 181, 255) // Normal light
+				}
 			} else {
-				SDL.SetRenderDrawColor(self.renderer, 181, 136, 99, 255)
+				// Dark squares - highlight if selected or valid destination
+				if is_selected {
+					SDL.SetRenderDrawColor(self.renderer, 255, 215, 0, 255) // Golden highlight for selected
+				} else if is_valid_destination {
+					SDL.SetRenderDrawColor(self.renderer, 50, 205, 50, 255) // Green for valid moves
+				} else {
+					SDL.SetRenderDrawColor(self.renderer, 181, 136, 99, 255) // Normal dark
+				}
 			}
 
 			rect := SDL.Rect {
